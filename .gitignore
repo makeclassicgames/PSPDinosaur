@@ -1,0 +1,5 @@
+raylib.prx
+raylib.elf
+*.o 
+PARAM.SFO 
+*.PBP
