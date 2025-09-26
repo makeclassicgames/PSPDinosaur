@@ -1,3 +1,4 @@
+.vscode/
 raylib.prx
 raylib.elf
 *.o 
