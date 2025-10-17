@@ -1,5 +1,7 @@
 #include "player.h"
 #include <raylib.h>
+#include <pspdebug.h>
+
 
 void PlayerInit(Player* player, int x, int y, int width, int height, int jumpStrength) {
     player->x = x;
@@ -9,6 +11,7 @@ void PlayerInit(Player* player, int x, int y, int width, int height, int jumpStr
     player->velocity = 0;
     player->jumpStrength = jumpStrength;
     player->isJumping = false;
+    SpriteInit(&player->sprite, "host0:/dinosaur/PATO1.png");
 }
 
 void PlayerUpdate(Player* player){
@@ -16,5 +19,5 @@ void PlayerUpdate(Player* player){
 }
 
 void PlayerDraw(const Player* player) {
-    DrawRectangle(player->x, player->y, player->width, player->height, BLUE);
+   SpriteDraw(&player->sprite, player->x, player->y);
 }

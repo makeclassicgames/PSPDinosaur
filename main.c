@@ -51,6 +51,7 @@ bool initApp()
 }
 void finishApp()
 {
+    UnloadTexture(game.player.sprite.texture);
 }
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -81,7 +82,7 @@ int main(void)
         BeginDrawing();
 
         Draw();
-
+        
         EndDrawing();
 
         //-----------------------------------------------------
@@ -102,6 +103,7 @@ void InitGame(void)
     game.score = 0;
     game.state = GAME_INIT;
     PlayerInit(&game.player, 50, ATTR_PSP_HEIGHT - 100, 50, 50, 10);
+    
     //--------------------------------------------------------------------------------------
 }
 void Update()
@@ -144,6 +146,8 @@ void Draw()
 
     DrawText("Dinosaur", 20, 20, 20, DARKGRAY);
     PlayerDraw(&game.player);
+    
+
     switch (game.state)
     {
     case GAME_INIT:
