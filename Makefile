@@ -1,6 +1,6 @@
 BUILD_PRX = 1
 TARGET = raylib
-OBJS =  sprite.o input.o player.o main.o
+OBJS =  resource.o sprite.o input.o player.o main.o
 INCDIR = inc/
 CFLAGS = -Wall
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti

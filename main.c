@@ -24,6 +24,7 @@
 
 #include "input.h"
 #include "game.h"
+#include "resource.h"
 
 void InitGame(void);
 void Update(void);
@@ -51,7 +52,8 @@ bool initApp()
 }
 void finishApp()
 {
-    UnloadTexture(game.player.sprite.texture);
+
+    ResourceManagerUnload();
 }
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -102,6 +104,7 @@ void InitGame(void)
     //--------------------------------------------------------------------------------------
     game.score = 0;
     game.state = GAME_INIT;
+    ResourceManagerInit();
     PlayerInit(&game.player, 50, ATTR_PSP_HEIGHT - 100, 50, 50, 10);
     
     //--------------------------------------------------------------------------------------
@@ -112,6 +115,7 @@ void Update()
     // Update
     //-----------------------------------------------------
     UpdateInput(&game.currentAction);
+    PlayerUpdate(&game.player);
     switch (game.state)
     {
     case GAME_INIT:
@@ -147,7 +151,6 @@ void Draw()
     DrawText("Dinosaur", 20, 20, 20, DARKGRAY);
     PlayerDraw(&game.player);
     
-
     switch (game.state)
     {
     case GAME_INIT:
