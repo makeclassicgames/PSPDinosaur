@@ -30,6 +30,27 @@ void InitGame(void);
 void Update(void);
 void Draw(void);
 
+//Init State
+void InitStart(void);
+void UpdateInitState(void);
+void DrawInitState(void);
+
+//Running State
+void InitRunning(void);
+void UpdateRunningState(void);
+void DrawRunningState(void);
+
+//Paused State
+void InitPaused(void);
+void UpdatePausedState(void);
+void DrawPausedState(void);
+
+//Game Over State
+void InitGameOver(void);
+void UpdateGameOverState(void);
+void DrawGameOverState(void);
+
+
 PSP_MODULE_INFO("Dinosaur", 0, 1, 1);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 
@@ -103,7 +124,7 @@ void InitGame(void)
     // Initialize your variables here
     //--------------------------------------------------------------------------------------
     game.score = 0;
-    game.state = GAME_INIT;
+    game.state = GAME_OVER;
     ResourceManagerInit();
     PlayerInit(&game.player, 50, ATTR_PSP_HEIGHT - 100, 50, 50, 10);
     
@@ -115,29 +136,21 @@ void Update()
     // Update
     //-----------------------------------------------------
     UpdateInput(&game.currentAction);
-    PlayerUpdate(&game.player);
+    
+
     switch (game.state)
     {
     case GAME_INIT:
-       if(game.currentAction == ACTION_JUMP)
-       {
-           game.state = GAME_RUNNING;
-       }
+       UpdateInitState();
        break;
     case GAME_RUNNING:
-       if(game.currentAction == ACTION_JUMP){
-           game.state = GAME_PAUSED;
-       }
+        UpdateRunningState();
         break;
     case GAME_PAUSED:
-        if(game.currentAction == ACTION_JUMP){
-            game.state = GAME_OVER;
-        }
+        UpdatePausedState();
         break;
     case GAME_OVER:
-        if(game.currentAction == ACTION_JUMP){
-            game.state = GAME_INIT;
-        }
+        UpdateGameOverState();
         break;
     }
     //-----------------------------------------------------
@@ -148,24 +161,117 @@ void Draw()
     // Draw your variables here
     ClearBackground(RAYWHITE);
 
-    DrawText("Dinosaur", 20, 20, 20, DARKGRAY);
     PlayerDraw(&game.player);
     
     switch (game.state)
     {
     case GAME_INIT:
-        DrawText("Press X to Start", 150, 130, 20, LIGHTGRAY);
+        DrawInitState();
         break;
     case GAME_RUNNING:
-        DrawText("Game Running", 150, 130, 20, LIGHTGRAY);
+        DrawRunningState();
         break;
     case GAME_PAUSED:
-        DrawText("Game Paused", 150, 130, 20, LIGHTGRAY);
+        DrawPausedState();
         break;
     case GAME_OVER:
-        DrawText("Game Over", 150, 130, 20, LIGHTGRAY);
+        DrawGameOverState();
         break;
     default:
         break;
     }
+}
+
+void UpdateInitState(void)
+{
+    if(game.currentAction == ACTION_START)
+    {
+        game.state = GAME_RUNNING;
+        InitRunning();
+    }
+}
+
+void DrawInitState(void)
+{
+    DrawText("Press START to begin!", 100, 130, 20, LIGHTGRAY);
+    PlayerDraw(&game.player);
+}
+
+void InitRunning(void)
+{
+    // Initialize Running state variables here
+}
+
+void UpdateRunningState(void)
+{
+  
+    if(game.currentAction == ACTION_DUCK){
+        SpriteSetSpriteAnimation(&game.player.entity.sprite,DUCK_ANIMATION);
+    }else{
+        SpriteSetSpriteAnimation(&game.player.entity.sprite,WALK_ANIMATION);
+    }
+
+    if(game.currentAction == ACTION_START){
+        game.state = GAME_PAUSED;
+    }
+    if(game.currentAction == ACTION_JUMP && !game.player.isJumping){
+        game.player.isJumping = true;
+        TraceLog(LOG_INFO,"Jumping");
+        game.player.entity.velocity.y = -game.player.jumpStrength;
+    }
+    PlayerUpdate(&game.player);
+    if(game.player.isJumping){
+        float dt = GetFrameTime();
+        game.player.entity.velocity.y += 20.0f * dt; // Gravity effect
+        TraceLog(LOG_INFO,"Y Position: %f",game.player.entity.position.y);
+        TraceLog(LOG_INFO,"Y Velocity: %f",game.player.entity.velocity.y);
+        TraceLog(LOG_INFO, "MAX_POS: %d", ATTR_PSP_HEIGHT - 100);
+        if(game.player.entity.position.y >= ATTR_PSP_HEIGHT - 100){
+            game.player.entity.position.y = ATTR_PSP_HEIGHT - 100;
+            game.player.isJumping = false;
+            game.player.entity.velocity.y = 0;
+        }
+    }
+    
+}
+
+void DrawRunningState(void)
+{
+    PlayerDraw(&game.player);
+}
+
+void InitPaused(void)
+{
+    // Initialize Paused state variables here
+}
+
+void UpdatePausedState(void)
+{
+    if(game.currentAction == ACTION_START){
+        game.state = GAME_RUNNING;
+    }
+}
+
+void DrawPausedState(void)
+{
+    DrawText("Game Paused. Press START to resume.", 50, 130, 20, LIGHTGRAY);
+    PlayerDraw(&game.player);
+}
+
+void InitGameOver(void)
+{
+    // Initialize Game Over state variables here
+}
+
+void UpdateGameOverState(void)
+{
+    if(game.currentAction == ACTION_START){
+        game.state = GAME_RUNNING;
+    }
+}
+
+void DrawGameOverState(void)
+{
+    DrawText("Game Over", 150, 130, 20, LIGHTGRAY);
+    PlayerDraw(&game.player);
 }

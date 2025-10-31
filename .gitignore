@@ -1,6 +1,6 @@
 .vscode/
-raylib.prx
-raylib.elf
-*.o 
-PARAM.SFO 
-*.PBP
+**.prx
+**.elf
+**.o
+**.SFO
+**.PBP

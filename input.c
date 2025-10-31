@@ -11,7 +11,7 @@ void UpdateInput(enum Actions* currentAction)
     {
         *currentAction = ACTION_JUMP;
     }
-    else if(latchData.uiMake & PSP_CTRL_DOWN)
+    else if(latchData.uiPress & PSP_CTRL_DOWN)
     {
         *currentAction = ACTION_DUCK;
     }

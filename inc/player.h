@@ -5,16 +5,15 @@
 #include <stdbool.h>
 
 #include "sprite.h"
+#include "engine.h"
+
+#define WALK_ANIMATION 0
+#define DUCK_ANIMATION 1
 
 typedef struct player{
-    int x;
-    int y;
-    int width;
-    int height;
-    int velocity;
+    Entity entity;
     int jumpStrength;
     bool isJumping;
-    Sprite sprite;
 }Player;
 
 void PlayerInit(Player* player, int x, int y, int width, int height, int jumpStrength);

@@ -9,6 +9,12 @@ typedef struct TextureResource{
 
 #define RSOURCE_DUCK_WALK_0 0
 #define RSOURCE_DUCK_WALK_1 1
+#define RSOURCE_DUCK_WALK_2 2
+#define RSOURCE_DUCK_WALK_3 3
+#define RSOURCE_DUCK_DOWN_0 4
+#define RSOURCE_DUCK_DOWN_1 5
+#define RSOURCE_DUCK_DOWN_2 6
+#define RSOURCE_DUCK_DOWN_3 7
 
 typedef struct SoundResource{
     Sound Sound;

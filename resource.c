@@ -1,15 +1,22 @@
 #include <stdlib.h>
 #include "resource.h"
 
-#define MAX_TEXTURES 2
+#define MAX_TEXTURES 8
 
 
 
 ResourceManager resourceManager;
 
 const char* textureResources[] = {
-    "host0:/dinosaur/PATO.png",
-    "host0:/dinosaur/PATO1.png",
+    "host0:/dinosaur/resources/JamonAndar0.png",
+    "host0:/dinosaur/resources/JamonAndar1.png",
+    "host0:/dinosaur/resources/JamonAndar2.png",
+    "host0:/dinosaur/resources/JamonAndar3.png",
+    "host0:/dinosaur/resources/JamonAgachada0.png",
+    "host0:/dinosaur/resources/JamonAgachada1.png",
+    "host0:/dinosaur/resources/JamonAgachada2.png",
+    "host0:/dinosaur/resources/JamonAgachada3.png"
+
 };
 
 SoundResource soundResources[] = {
