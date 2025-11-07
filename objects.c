@@ -11,8 +11,8 @@ void ObjectInit(Object* object, float x, float y, enum ObjectType type){
     TraceLog(LOG_INFO,"Initializing Object of Type %d",type);
     object->objectType = type;
     SpriteInit(&object->entity.sprite);
-    TraceLog(LOG_INFO,"Loading Sprite for Object Type %d",type);
-    switch (type)
+    TraceLog(LOG_INFO,"Loading Sprite for Object Type %d",object->objectType);
+    switch (object->objectType)
     {
     case CACTUS0:
         loadObjectSprite0(object);
@@ -57,10 +57,13 @@ void loadObjectSprite2(Object* object){
 void loadObjectSprite3(Object* object){
     TraceLog(LOG_INFO,"Loading Sprite 3");
     Animation * animation = AnimationBuilder((const int[]){RESOURCE_PTERODACTYL0, RESOURCE_PTERODACTYL1}, 2, 5, true);
-    object->entity.sprite.animations = animation;
+    object->entity.sprite.animations= animation;
     object->entity.sprite.animationCount = 1;
 }
-void ObjectUpdate(Object* object);
+
+void ObjectUpdate(Object* object){
+    EntityUpdate(&object->entity);
+}
 void ObjectDraw(const Object* object){
     EntityDraw(&object->entity);
 }

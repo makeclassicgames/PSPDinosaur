@@ -68,6 +68,9 @@ bool l1flag = false;
 bool r1flag = false;
 int xflag;
 
+Object cactus;
+Object cactus2;
+Object cactus1;
 
 
 
@@ -131,7 +134,9 @@ void InitGame(void)
     game.state = GAME_INIT;
     ResourceManagerInit();
     PlayerInit(&game.player, 40, MAX_PLAYER_Y, 50, 50, 10);
-  
+    ObjectInit(&cactus, 300, MAX_PLAYER_Y, CACTUS1);
+    ObjectInit(&cactus2, 400, MAX_PLAYER_Y, CACTUS2);
+    ObjectInit(&cactus1, 200, MAX_PLAYER_Y, CACTUS0);
     //--------------------------------------------------------------------------------------
 }
 void Update()
@@ -198,7 +203,6 @@ void UpdateInitState(void)
 void DrawInitState(void)
 {
     DrawText("Press START to begin!", 100, 130, 20, LIGHTGRAY);
-    DrawText(GetWorkingDirectory(), 40,40,20,LIGHTGRAY);
     PlayerDraw(&game.player);
 }
 
@@ -240,6 +244,9 @@ void UpdateRunningState(void)
 void DrawRunningState(void)
 {
     PlayerDraw(&game.player);
+    ObjectDraw(&cactus);
+    ObjectDraw(&cactus2);
+    ObjectDraw(&cactus1);
 }
 
 void InitPaused(void)
