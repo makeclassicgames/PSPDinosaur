@@ -24,6 +24,7 @@
 
 #include "input.h"
 #include "game.h"
+#include "objects.h"
 #include "resource.h"
 
 void InitGame(void);
@@ -57,6 +58,8 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 #define ATTR_PSP_WIDTH 480
 #define ATTR_PSP_HEIGHT 272
 
+#define MAX_PLAYER_Y (ATTR_PSP_HEIGHT - 75)
+
 //SceCtrlData pad;
 SceCtrlLatch latchData;
 
@@ -64,6 +67,7 @@ bool flag = true;
 bool l1flag = false;
 bool r1flag = false;
 int xflag;
+
 
 
 
@@ -124,10 +128,10 @@ void InitGame(void)
     // Initialize your variables here
     //--------------------------------------------------------------------------------------
     game.score = 0;
-    game.state = GAME_OVER;
+    game.state = GAME_INIT;
     ResourceManagerInit();
-    PlayerInit(&game.player, 50, ATTR_PSP_HEIGHT - 100, 50, 50, 10);
-    
+    PlayerInit(&game.player, 40, MAX_PLAYER_Y, 50, 50, 10);
+  
     //--------------------------------------------------------------------------------------
 }
 void Update()
@@ -194,6 +198,7 @@ void UpdateInitState(void)
 void DrawInitState(void)
 {
     DrawText("Press START to begin!", 100, 130, 20, LIGHTGRAY);
+    DrawText(GetWorkingDirectory(), 40,40,20,LIGHTGRAY);
     PlayerDraw(&game.player);
 }
 
@@ -216,18 +221,15 @@ void UpdateRunningState(void)
     }
     if(game.currentAction == ACTION_JUMP && !game.player.isJumping){
         game.player.isJumping = true;
-        TraceLog(LOG_INFO,"Jumping");
         game.player.entity.velocity.y = -game.player.jumpStrength;
     }
     PlayerUpdate(&game.player);
     if(game.player.isJumping){
         float dt = GetFrameTime();
         game.player.entity.velocity.y += 20.0f * dt; // Gravity effect
-        TraceLog(LOG_INFO,"Y Position: %f",game.player.entity.position.y);
-        TraceLog(LOG_INFO,"Y Velocity: %f",game.player.entity.velocity.y);
-        TraceLog(LOG_INFO, "MAX_POS: %d", ATTR_PSP_HEIGHT - 100);
-        if(game.player.entity.position.y >= ATTR_PSP_HEIGHT - 100){
-            game.player.entity.position.y = ATTR_PSP_HEIGHT - 100;
+
+        if(game.player.entity.position.y >= MAX_PLAYER_Y){
+            game.player.entity.position.y = MAX_PLAYER_Y;
             game.player.isJumping = false;
             game.player.entity.velocity.y = 0;
         }

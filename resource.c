@@ -1,22 +1,28 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "resource.h"
 
-#define MAX_TEXTURES 8
+#define MAX_TEXTURES 13
 
 
 
 ResourceManager resourceManager;
 
 const char* textureResources[] = {
-    "host0:/dinosaur/resources/JamonAndar0.png",
-    "host0:/dinosaur/resources/JamonAndar1.png",
-    "host0:/dinosaur/resources/JamonAndar2.png",
-    "host0:/dinosaur/resources/JamonAndar3.png",
-    "host0:/dinosaur/resources/JamonAgachada0.png",
-    "host0:/dinosaur/resources/JamonAgachada1.png",
-    "host0:/dinosaur/resources/JamonAgachada2.png",
-    "host0:/dinosaur/resources/JamonAgachada3.png"
-
+    "resources/JamonAndar0.png",
+    "resources/JamonAndar1.png",
+    "resources/JamonAndar2.png",
+    "resources/JamonAndar3.png",
+    "resources/JamonAgachada0.png",
+    "resources/JamonAgachada1.png",
+    "resources/JamonAgachada2.png",
+    "resources/JamonAgachada3.png",
+    "resources/cactus0.png",
+    "resources/cactus1.png",
+    "resources/cactus2.png",
+    "resources/petrodactil0.png",
+    "resources/petrodactil1.png"
 };
 
 SoundResource soundResources[] = {
@@ -24,11 +30,14 @@ SoundResource soundResources[] = {
 };
 
 void ResourceManagerInit() {
+    char buffer[256];
+    
     resourceManager.textureCount = MAX_TEXTURES;
     resourceManager.textures = (TextureResource*)malloc(sizeof(TextureResource) * resourceManager.textureCount);
     
     for (int i = 0; i < resourceManager.textureCount; i++) {
-        resourceManager.textures[i].Texture = LoadTexture(textureResources[i]);
+        sprintf(buffer, "%s/%s", GetWorkingDirectory(), textureResources[i]);
+        resourceManager.textures[i].Texture = LoadTexture(buffer);
     }
     
     resourceManager.soundCount = 0;

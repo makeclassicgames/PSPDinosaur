@@ -1,6 +1,6 @@
 BUILD_PRX = 1
 TARGET = dinosaur
-OBJS =  resource.o sprite.o engine.o input.o player.o main.o
+OBJS =  resource.o sprite.o engine.o objects.o input.o player.o main.o
 INCDIR = inc/
 CFLAGS = -Wall
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
