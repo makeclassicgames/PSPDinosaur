@@ -51,6 +51,8 @@ void InitGameOver(void);
 void UpdateGameOverState(void);
 void DrawGameOverState(void);
 
+void spawnCactus();
+
 
 PSP_MODULE_INFO("Dinosaur", 0, 1, 1);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
@@ -68,9 +70,6 @@ bool l1flag = false;
 bool r1flag = false;
 int xflag;
 
-Object cactus;
-Object cactus2;
-Object cactus1;
 
 
 
@@ -133,10 +132,10 @@ void InitGame(void)
     game.score = 0;
     game.state = GAME_INIT;
     ResourceManagerInit();
-    PlayerInit(&game.player, 40, MAX_PLAYER_Y, 50, 50, 10);
-    ObjectInit(&cactus, 300, MAX_PLAYER_Y, CACTUS1);
-    ObjectInit(&cactus2, 400, MAX_PLAYER_Y, CACTUS2);
-    ObjectInit(&cactus1, 200, MAX_PLAYER_Y, CACTUS0);
+    PlayerInit(&game.player, 40, MAX_PLAYER_Y, 50, 50, JUMP_STRENGTH);
+    EntitySetCollider(&game.player.entity,(Collider){5,5,24,28});
+    TimerInit(&game.obstacleTimer,SECONDS_TO_FRAME(3),true,false,spawnCactus);
+    ObjectListInit(&game.cactusList);
     //--------------------------------------------------------------------------------------
 }
 void Update()
@@ -209,6 +208,8 @@ void DrawInitState(void)
 void InitRunning(void)
 {
     // Initialize Running state variables here
+    TimerStart(&game.obstacleTimer);
+    
 }
 
 void UpdateRunningState(void)
@@ -222,6 +223,7 @@ void UpdateRunningState(void)
 
     if(game.currentAction == ACTION_START){
         game.state = GAME_PAUSED;
+        InitPaused();
     }
     if(game.currentAction == ACTION_JUMP && !game.player.isJumping){
         game.player.isJumping = true;
@@ -230,7 +232,7 @@ void UpdateRunningState(void)
     PlayerUpdate(&game.player);
     if(game.player.isJumping){
         float dt = GetFrameTime();
-        game.player.entity.velocity.y += 20.0f * dt; // Gravity effect
+        game.player.entity.velocity.y += GRAVITY * dt; // Gravity effect
 
         if(game.player.entity.position.y >= MAX_PLAYER_Y){
             game.player.entity.position.y = MAX_PLAYER_Y;
@@ -238,20 +240,51 @@ void UpdateRunningState(void)
             game.player.entity.velocity.y = 0;
         }
     }
+    TimerUpdate(&game.obstacleTimer);
+    int cactusCount = game.cactusList.count;
     
+    for(int i=0;i<cactusCount;i++){
+        ObjectNode* objNode =&game.cactusList.objects[i];
+        ObjectUpdate(&objNode->object);
+        if(objNode->object.entity.position.x<16){
+            ObjectListRemove(&game.cactusList,objNode->objectID);
+            continue;
+        }
+        Rectangle playerRect = getRectangleFromCollider(&game.player.entity);
+        Rectangle objectRect = getRectangleFromCollider(&objNode->object.entity);
+        if(CheckCollisionRecs(playerRect,objectRect)){
+            game.state = GAME_OVER;
+            InitGameOver();
+            return;
+        }
+    }
 }
 
 void DrawRunningState(void)
 {
     PlayerDraw(&game.player);
-    ObjectDraw(&cactus);
-    ObjectDraw(&cactus2);
-    ObjectDraw(&cactus1);
+    int cactusCount = game.cactusList.count;
+   
+    for(int i=0;i<cactusCount;i++){
+        ObjectNode* objNode = &game.cactusList.objects[i];
+        ObjectDraw(&objNode->object);
+    }
+    
+}
+
+void spawnCactus(){
+    Object* object = (Object*)malloc(sizeof(Object));
+
+    ObjectInit(object, ATTR_PSP_WIDTH+40, MAX_PLAYER_Y, CACTUS0);
+    object->entity.velocity.x = -2;
+    EntitySetCollider(&object->entity, (Collider){2,5,12,23});
+    ObjectListAdd(&game.cactusList, *object);
+    
 }
 
 void InitPaused(void)
 {
-    // Initialize Paused state variables here
+    TimerStop(&game.obstacleTimer);
 }
 
 void UpdatePausedState(void)
@@ -276,6 +309,7 @@ void UpdateGameOverState(void)
 {
     if(game.currentAction == ACTION_START){
         game.state = GAME_RUNNING;
+        TimerStart(&game.obstacleTimer);
     }
 }
 

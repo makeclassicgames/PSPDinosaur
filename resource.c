@@ -18,7 +18,7 @@ const char* textureResources[] = {
     "resources/JamonAgachada1.png",
     "resources/JamonAgachada2.png",
     "resources/JamonAgachada3.png",
-    "resources/cactus0.png",
+    "resources/pino1.png",
     "resources/cactus1.png",
     "resources/cactus2.png",
     "resources/petrodactil0.png",

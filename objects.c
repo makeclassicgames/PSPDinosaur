@@ -67,3 +67,50 @@ void ObjectUpdate(Object* object){
 void ObjectDraw(const Object* object){
     EntityDraw(&object->entity);
 }
+
+void ObjectListInit(ObjectList* list){
+    list->objects = (ObjectNode*)malloc(sizeof(ObjectNode) * MAX_OBJECTS);
+    list->count = 0;
+}
+
+void ObjectListAdd(ObjectList* list, Object object){
+    if(list->count>=MAX_OBJECTS){
+        TraceLog(LOG_WARNING,"Object List Full, cannot add more objects");
+        return;
+    }
+    ObjectNode* node = &list->objects[list->count++];
+    node->objectID = list->count; // Simple ID assignment
+    node->object = object;
+}
+
+void ObjectListGet(ObjectList* list, int objectId, Object* outObject){
+    for(int i = 0; i < list->count; i++){
+        if(list->objects[i].objectID == objectId){
+            *outObject = list->objects[i].object;
+            return;
+        }
+    }
+    outObject = NULL;
+}
+
+void ObjectListRemove(ObjectList* list, int objectId){
+    for(int i = 0; i < list->count; i++){
+        if(list->objects[i].objectID == objectId){
+            // Shift remaining objects
+            for(int j = i; j < list->count - 1; j++){
+                list->objects[j] = list->objects[j + 1];
+            }
+            list->count--;
+            return;
+        }
+    }
+}
+
+ObjectNode* ObjectListToArray(ObjectList* list,int* outCount){
+    *outCount = list->count;
+    ObjectNode* array = (ObjectNode*)malloc(sizeof(ObjectNode) * list->count);
+    for(int i = 0; i < list->count; i++){
+        array[i] = list->objects[i];
+    }
+    return array;
+}
