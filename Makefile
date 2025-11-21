@@ -1,5 +1,5 @@
 BUILD_PRX = 1
-TARGET = dinosaur
+TARGET = mspatman
 OBJS =  resource.o sprite.o engine.o objects.o input.o player.o main.o
 INCDIR = inc/
 CFLAGS = -Wall
