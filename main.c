@@ -53,6 +53,8 @@ void DrawGameOverState(void);
 
 void spawnCactus();
 
+void DrawScore();
+
 
 PSP_MODULE_INFO("Dinosaur", 0, 1, 1);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
@@ -60,7 +62,7 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 #define ATTR_PSP_WIDTH 480
 #define ATTR_PSP_HEIGHT 272
 
-#define MAX_PLAYER_Y (ATTR_PSP_HEIGHT - 75)
+#define MAX_PLAYER_Y (ATTR_PSP_HEIGHT - 50)
 
 //SceCtrlData pad;
 SceCtrlLatch latchData;
@@ -92,7 +94,7 @@ int main(void)
     const int screenWidth = ATTR_PSP_WIDTH;
     const int screenHeight = ATTR_PSP_HEIGHT;
 
-    InitWindow(screenWidth, screenHeight, "Dinosaur");
+    InitWindow(screenWidth, screenHeight, "MS Patman");
 
     InitGame();
 
@@ -129,13 +131,18 @@ void InitGame(void)
 {
     // Initialize your variables here
     //--------------------------------------------------------------------------------------
-    game.score = 0;
     game.state = GAME_INIT;
+    game.backgroundCount = 4;
     ResourceManagerInit();
     PlayerInit(&game.player, 40, MAX_PLAYER_Y, 50, 50, JUMP_STRENGTH);
     EntitySetCollider(&game.player.entity,(Collider){5,5,24,28});
     TimerInit(&game.obstacleTimer,SECONDS_TO_FRAME(3),true,false,spawnCactus);
     ObjectListInit(&game.cactusList);
+    BackgroundInit(&game.backgrounds[0], ResourceGetTexture(RESOURCE_BACKGROUND), (Vector2){0,0}, 1.0f, 0.0f);
+    BackgroundInit(&game.backgrounds[1], ResourceGetTexture(RESOURCE_FAR), (Vector2){0,128.0}, 1.0f, 20.0f);
+    BackgroundInit(&game.backgrounds[2], ResourceGetTexture(RESOURCE_MOUNTAINS), (Vector2){0,140.0}, 1.0f, 30.0f);
+    BackgroundInit(&game.backgrounds[3], ResourceGetTexture(RESOURCE_MOUNTAIN_TREES), (Vector2){0,150.0}, 1.0f, 40.0f);
+    game.background = *ResourceGetTexture(RESOURCE_BACKGROUND);
     //--------------------------------------------------------------------------------------
 }
 void Update()
@@ -167,10 +174,16 @@ void Update()
 void Draw()
 {
     // Draw your variables here
-    ClearBackground(RAYWHITE);
+    ClearBackground((Color){136,93,131});
 
     PlayerDraw(&game.player);
-    
+    DrawTexture(game.background,0,0,RAYWHITE);
+
+    for(int i = 0; i < game.backgroundCount; i++) {
+        BackgroundDraw(&game.backgrounds[i]);
+    }
+
+    DrawScore();
     switch (game.state)
     {
     case GAME_INIT:
@@ -207,6 +220,7 @@ void DrawInitState(void)
 
 void InitRunning(void)
 {
+    game.score = 0;
     // Initialize Running state variables here
     TimerStart(&game.obstacleTimer);
     
@@ -243,11 +257,12 @@ void UpdateRunningState(void)
     TimerUpdate(&game.obstacleTimer);
     int cactusCount = game.cactusList.count;
     
-    for(int i=0;i<cactusCount;i++){
+    for(size_t i=0;i<cactusCount;i++){
         ObjectNode* objNode =&game.cactusList.objects[i];
         ObjectUpdate(&objNode->object);
         if(objNode->object.entity.position.x<16){
             ObjectListRemove(&game.cactusList,objNode->objectID);
+            game.score+=10;
             continue;
         }
         Rectangle playerRect = getRectangleFromCollider(&game.player.entity);
@@ -257,6 +272,10 @@ void UpdateRunningState(void)
             InitGameOver();
             return;
         }
+    }
+
+    for(int i = 0; i < game.backgroundCount; i++) {
+        BackgroundUpdate(&game.backgrounds[i]);
     }
 }
 
@@ -291,6 +310,7 @@ void UpdatePausedState(void)
 {
     if(game.currentAction == ACTION_START){
         game.state = GAME_RUNNING;
+        InitRunning();
     }
 }
 
@@ -304,17 +324,49 @@ void InitGameOver(void)
 {
     // Initialize Game Over state variables here
 }
+void DrawScore(){
+    char scoreText[20];
+    sprintf(scoreText, "Score: %d", game.score);
+    DrawText(scoreText, ATTR_PSP_WIDTH-100, 10, 15, LIGHTGRAY);
+}
 
 void UpdateGameOverState(void)
 {
     if(game.currentAction == ACTION_START){
+        ObjectListClear(&game.cactusList);
         game.state = GAME_RUNNING;
-        TimerStart(&game.obstacleTimer);
+        InitRunning();
     }
 }
 
 void DrawGameOverState(void)
 {
-    DrawText("Game Over", 150, 130, 20, LIGHTGRAY);
+    DrawText("Game Over", 190, 130, 20, LIGHTGRAY);
     PlayerDraw(&game.player);
+    int cactusCount = game.cactusList.count;
+   
+    for(int i=0;i<cactusCount;i++){
+        ObjectNode* objNode = &game.cactusList.objects[i];
+        ObjectDraw(&objNode->object);
+    }
+}
+
+void BackgroundInit(Background* bg, Texture2D* texture,Vector2 initialPosition, float scaleFactor, float scrollSpeed){
+    bg->texture = texture;
+    bg->position = initialPosition;
+    bg->scaleFactor = scaleFactor;
+    bg->scrollSpeed = scrollSpeed;
+}
+
+void BackgroundUpdate(Background* bg){
+    float dt = GetFrameTime();
+    bg->position.x -= bg->scrollSpeed * dt;
+    if(bg->position.x <= -bg->texture->width * bg->scaleFactor){
+        bg->position.x = 0;
+    }
+}
+
+void BackgroundDraw(const Background* bg){
+    DrawTextureEx(*bg->texture, bg->position, 0.0f, bg->scaleFactor, WHITE);
+    DrawTextureEx(*bg->texture, (Vector2){bg->position.x + bg->texture->width * bg->scaleFactor, bg->position.y}, 0.0f, bg->scaleFactor, WHITE);
 }

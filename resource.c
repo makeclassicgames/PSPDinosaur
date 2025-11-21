@@ -3,7 +3,7 @@
 #include <string.h>
 #include "resource.h"
 
-#define MAX_TEXTURES 13
+#define MAX_TEXTURES 17
 
 
 
@@ -22,7 +22,11 @@ const char* textureResources[] = {
     "resources/cactus1.png",
     "resources/cactus2.png",
     "resources/petrodactil0.png",
-    "resources/petrodactil1.png"
+    "resources/petrodactil1.png",
+    "resources/bg.png",
+    "resources/far.png",
+    "resources/mountains.png",
+    "resources/mountain-trees.png"
 };
 
 SoundResource soundResources[] = {

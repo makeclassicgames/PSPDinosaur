@@ -114,3 +114,8 @@ ObjectNode* ObjectListToArray(ObjectList* list,int* outCount){
     }
     return array;
 }
+
+void ObjectListClear(ObjectList* list){
+  
+    list->count = 0;
+}

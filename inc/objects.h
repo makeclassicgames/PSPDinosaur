@@ -41,5 +41,6 @@ void ObjectListAdd(ObjectList* list, Object object);
 void ObjectListGet(ObjectList* list, int objectId, Object* outObject);
 void ObjectListRemove(ObjectList* list, int objectId);
 ObjectNode* ObjectListToArray(ObjectList* list, int* outCount);
+void ObjectListClear(ObjectList* list);
 
 #endif // OBJECTS_H

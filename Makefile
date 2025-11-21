@@ -11,7 +11,7 @@ LDFLAGS =
 LIBS=   -lraylib -lpng -lz  -lglut -lGLU -lGL -lpspvfpu 
 
 EXTRA_TARGETS = EBOOT.PBP
-PSP_EBOOT_TITLE = Dinosaur
+PSP_EBOOT_TITLE = Ms Patman
 
 BUILD_PRX=1
 
